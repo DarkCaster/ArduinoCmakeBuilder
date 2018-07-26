@@ -60,6 +60,35 @@ function(probe_arduino_libs PROBEPATH)
     endif()
 endfunction()
 
+function(add_arduino_library LIBNAME LIBBASEDIR)
+    file(TO_CMAKE_PATH "${LIBBASEDIR}" LIBBASEDIR)
+    if(IS_DIRECTORY ${LIBBASEDIR}/${LIBNAME})
+        set(LIBDIR ${LIBBASEDIR}/${LIBNAME})
+        file(GLOB_RECURSE LIBSOURCES ${LIBDIR}/*.cpp ${LIBDIR}/*.c ${LIBDIR}/*.S)
+        string(REGEX REPLACE "examples?/.*" "" LIBSOURCES "${LIBSOURCES}")
+        if(LIBSOURCES)
+            add_library(${LIBNAME} ${LIBSOURCES})
+            target_link_libraries(${LIBNAME} arduino-core)
+        endif()
+        file(GLOB_RECURSE LIBHEADERS ${LIBDIR}/*.h ${LIBDIR}/*.hpp ${LIBDIR}/*.hxx ${LIBDIR}/*.hh)
+        string(REGEX REPLACE "examples?/.*" "" LIBHEADERS "${LIBSOURCES}")
+        if(LIBHEADERS)
+            foreach(HEADER LISTS LIBHEADERS)
+                get_filename_component(HEADER_DIR ${HEADER} PATH)
+                if(TARGET ${LIBNAME})
+                    target_include_directories(${LIBNAME} PUBLIC ${HEADER_DIR})
+                else()
+                    include_directories(SYSTEM ${HEADER_DIR})
+                    message(STATUS "Added ${HEADER_DIR}")
+                endif()
+            endforeach ()
+        endif()
+    else()
+        message(FATAL_ERROR "Failed to detect ${LIBNAME} library at ${LIBBASEDIR}")
+    endif()
+endfunction()
+
+
 set(ARDUINO_CORE_SEARCH_PATH "" CACHE PATH "Custom arduino-core search path, will be probed first")
 if(NOT ${ARDUINO_CORE_SEARCH_PATH} STREQUAL "")
     file(TO_CMAKE_PATH "${ARDUINO_CORE_SEARCH_PATH}" CM_ARDUINO_CORE_SEARCH_PATH)
@@ -130,6 +159,10 @@ endforeach ()
 if(NOT ARDUINO_LIBS_PATH)
     message(FATAL_ERROR "Failed to detect valid arduino-libs directory")
 endif()
+
+
+
+
 
 #trick for old qt-creator
 
