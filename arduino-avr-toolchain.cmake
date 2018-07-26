@@ -138,7 +138,7 @@ if(NOT AVRDUDE_PATH)
 endif()
 
 set(ARDUINO_MCU "atmega328p" CACHE STRING "MCU model, used by compiler")
-set(ARDUINO_F_CPU "16000000" CACHE STRING "Target clock speed")
+set(ARDUINO_F_CPU "16000000L" CACHE STRING "Target clock speed")
 
 set(ARDUINO_CXX_FLAGS "-g -Os -Wall -Wextra -std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -flto" CACHE STRING "Arduino AVR C++ flags (from arduino IDE 1.8.5)")
 set(ARDUINO_CXX_FLAGS_FULL "${ARDUINO_CXX_FLAGS} -mmcu=${ARDUINO_MCU} -DF_CPU=${ARDUINO_F_CPU} -DARDUINO_ARCH_AVR" CACHE INTERNAL "ARDUINO_CXX_FLAGS_FULL")
