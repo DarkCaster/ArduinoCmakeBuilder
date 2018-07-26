@@ -52,14 +52,52 @@ function(probe_arduino_avr_compiler PROBEPATH)
         set(CMAKE_LINKER ${AVR_C} CACHE INTERNAL "CMAKE_LINKER")
         set(CMAKE_C_LINK_EXECUTABLE "<CMAKE_LINKER> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS>  -o <TARGET> <LINK_LIBRARIES>" CACHE INTERNAL "CMAKE_C_LINK_EXECUTABLE")
         set(CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_LINKER> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS>  -o <TARGET> <LINK_LIBRARIES>" CACHE INTERNAL "CMAKE_CXX_LINK_EXECUTABLE")
+
+        message(STATUS "Found AVR toolchain at ${AVR_TOOLCHAIN_PATH}")
     endif()
 endfunction(probe_arduino_avr_compiler)
+
+function(probe_arduino_avrdude PROBEPATH)
+    if(NOT AVRDUDE_PATH)
+        if(NOT EXISTS ${PROBEPATH})
+           message(STATUS "Directory ${PROBEPATH} does not exist, skipping")
+           return()
+        endif()
+
+        message(STATUS "Searching for AVRDUDE utility at ${PROBEPATH}")
+        unset(AVRDUDE_BIN CACHE)
+        unset(AVRDUDE_CFG CACHE)
+
+        find_program(AVRDUDE_BIN avrdude PATHS "${PROBEPATH}/bin" NO_DEFAULT_PATH)
+        find_program(AVRDUDE_CFG avrdude.conf PATHS "${PROBEPATH}/etc" NO_DEFAULT_PATH)
+
+        foreach(probe IN ITEMS AVRDUDE_BIN AVRDUDE_CFG)
+            if(("${${probe}}" STREQUAL "${probe}-NOTFOUND") OR ("${${probe}}" STREQUAL ""))
+                message(STATUS "${probe} not found")
+                return()
+            endif()
+        endforeach()
+
+        set(AVRDUDE_PATH "${PROBEPATH}" CACHE INTERNAL "AVRDUDE utility autodetected path")
+        set(AVRDUDE_BIN ${AVRDUDE_BIN} CACHE INTERNAL "AVRDUDE_BIN")
+        set(AVRDUDE_CFG ${AVRDUDE_CFG} CACHE INTERNAL "AVRDUDE_CFG")
+
+        message(STATUS "Found AVRDUDE utility at ${AVRDUDE_PATH}")
+    endif()
+endfunction()
 
 set(AVR_TOOLCHAIN_SEARCH_PATH "" CACHE PATH "Custom AVR toolchain search path, will be probed first")
 if(NOT ${AVR_TOOLCHAIN_SEARCH_PATH} STREQUAL "")
     file(TO_CMAKE_PATH "${AVR_TOOLCHAIN_SEARCH_PATH}" CM_AVR_TOOLCHAIN_SEARCH_PATH)
     message(STATUS "Will try custom search path at ${CM_AVR_TOOLCHAIN_SEARCH_PATH}")
     unset(AVR_TOOLCHAIN_PATH CACHE)
+endif()
+
+set(AVRDUDE_SEARCH_PATH "" CACHE PATH "Custom AVRDUDE search path, will be probed first")
+if(NOT ${AVRDUDE_SEARCH_PATH} STREQUAL "")
+    file(TO_CMAKE_PATH "${AVRDUDE_SEARCH_PATH}" CM_AVRDUDE_SEARCH_PATH)
+    message(STATUS "Will try custom search path at ${CM_AVRDUDE_SEARCH_PATH}")
+    unset(AVRDUDE_PATH CACHE)
 endif()
 
 if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
@@ -70,6 +108,11 @@ if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     file(GLOB AVR_TEST_DIRS
         ${CM_AVR_TOOLCHAIN_SEARCH_PATH}
         ${ENV_LOCALAPPDATA}/Arduino*/packages/arduino/tools/avr-gcc/*
+        ${ENV_PROGRAMFILES}/Arduino/hardware/tools/avr
+        ${ENV_PROGRAMFILES_X86}/Arduino/hardware/tools/avr)
+    file(GLOB AVRDUDE_TEST_DIRS
+        ${CM_AVRDUDE_SEARCH_PATH}
+        ${ENV_LOCALAPPDATA}/Arduino*/packages/arduino/tools/avrdude/*
         ${ENV_PROGRAMFILES}/Arduino/hardware/tools/avr
         ${ENV_PROGRAMFILES_X86}/Arduino/hardware/tools/avr)
 elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Linux")
@@ -86,7 +129,13 @@ if(NOT AVR_TOOLCHAIN_PATH)
     message(FATAL_ERROR "Failed to detect valid AVR toolchain directory")
 endif()
 
-message(STATUS "Using AVR toolchain at ${AVR_TOOLCHAIN_PATH}")
+foreach (avrdude_test_dir ${AVRDUDE_TEST_DIRS})
+    probe_arduino_avrdude ("${avrdude_test_dir}")
+endforeach ()
+
+if(NOT AVRDUDE_PATH)
+    message(FATAL_ERROR "Failed to detect valid AVRDUDE utility")
+endif()
 
 set(ARDUINO_MCU "atmega328p" CACHE STRING "MCU model, used by compiler")
 set(ARDUINO_F_CPU "16000000" CACHE STRING "Target clock speed")
@@ -118,4 +167,17 @@ function(add_arduino_post_target BASE_TARGET)
         COMMAND ${AVR_SIZE} --mcu=${MCU} -C --format=avr "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${BASE_TARGET}"
         DEPENDS ${BASE_TARGET})
     add_custom_target(${BASE_TARGET}-post DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${BASE_TARGET}.hex)
+endfunction()
+
+set(ARDUINO_AVRDUDE_PORT "COM1" CACHE STRING "avrdude -P param")
+set(ARDUINO_AVRDUDE_BAUD "19200" CACHE STRING "avrdude -b param")
+set(ARDUINO_AVRDUDE_PROTO "arduino" CACHE STRING "avrdude -c param")
+set(ARDUINO_AVRDUDE_MCU ${ARDUINO_MCU} CACHE STRING "avrdude -p param")
+set(ARDUINO_AVRDUDE_EXTRACMD "-v;-D" CACHE STRING "avrdude extra parameters")
+
+function(add_arduino_upload_target BASE_TARGET)
+    add_custom_command(OUTPUT ${BASE_TARGET}.upload
+        COMMAND ${AVRDUDE_BIN} -C\"${AVRDUDE_CFG}\" -P${ARDUINO_AVRDUDE_PORT} -b${ARDUINO_AVRDUDE_BAUD} -c${ARDUINO_AVRDUDE_PROTO} -p${ARDUINO_AVRDUDE_MCU} ${ARDUINO_AVRDUDE_EXTRACMD} -Uflash:w:\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${BASE_TARGET}\".hex:i
+        DEPENDS ${BASE_TARGET}-post)
+    add_custom_target(${BASE_TARGET}-upload DEPENDS ${BASE_TARGET}.upload)
 endfunction()
