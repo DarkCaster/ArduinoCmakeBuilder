@@ -211,13 +211,3 @@ target_include_directories(arduino-core PUBLIC ${ARDUINO_CORE_PATH})
 target_include_directories(arduino-core PUBLIC ${ARDUINO_VARIANT_PATH})
 list(APPEND ARDUINO_ADDED_LIBS arduino-core)
 message(STATUS "Added arduino-core library from ${ARDUINO_CORE_PATH}")
-
-#trick for old qt-creator
-
-#if(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES)
-#  include_directories("${CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES}")
-#endif(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES)
-
-#if(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES)
-#  include_directories("${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES}")
-#endif(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES)
