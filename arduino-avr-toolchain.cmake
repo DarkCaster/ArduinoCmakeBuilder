@@ -141,16 +141,27 @@ set(ARDUINO_MCU "atmega328p" CACHE STRING "MCU model, used by compiler")
 set(ARDUINO_F_CPU "16000000L" CACHE STRING "Target clock speed")
 
 set(ARDUINO_CXX_FLAGS "-g -Os -Wall -Wextra -std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -flto" CACHE STRING "Arduino AVR C++ flags (from arduino IDE 1.8.5)")
-set(ARDUINO_CXX_FLAGS_FULL "${ARDUINO_CXX_FLAGS} -mmcu=${ARDUINO_MCU} -DF_CPU=${ARDUINO_F_CPU} -DARDUINO_ARCH_AVR" CACHE INTERNAL "ARDUINO_CXX_FLAGS_FULL")
-
 set(ARDUINO_C_FLAGS "-g -Os -Wall -Wextra -std=gnu11 -ffunction-sections -fdata-sections -flto -fno-fat-lto-objects" CACHE STRING "Arduino AVR C flags (from arduino IDE 1.8.5)")
-set(ARDUINO_C_FLAGS_FULL "${ARDUINO_C_FLAGS} -mmcu=${ARDUINO_MCU} -DF_CPU=${ARDUINO_F_CPU} -DARDUINO_ARCH_AVR" CACHE INTERNAL "ARDUINO_C_FLAGS_FULL")
-
 set(ARDUINO_ASM_FLAGS "-x assembler-with-cpp -g -Os -Wall -Wextra -flto -fno-fat-lto-objects" CACHE STRING "Arduino AVR ASM flags")
-set(ARDUINO_ASM_FLAGS_FULL "${ARDUINO_ASM_FLAGS} -mmcu=${ARDUINO_MCU} -DF_CPU=${ARDUINO_F_CPU} -DARDUINO_ARCH_AVR" CACHE INTERNAL "ARDUINO_ASM_FLAGS_FULL")
-
 set(ARDUINO_EXE_LINKER_FLAGS "-Wall -Wextra -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections" CACHE STRING "Arduino AVR GCC-linker flags")
-set(ARDUINO_EXE_LINKER_FLAGS_FULL "${ARDUINO_EXE_LINKER_FLAGS} -mmcu=${ARDUINO_MCU}" CACHE INTERNAL "ARDUINO_EXE_LINKER_FLAGS_FULL")
+
+# add default compiler definitions
+
+set(CMAKE_CXX_FLAGS "${ARDUINO_CXX_FLAGS} -mmcu=${ARDUINO_MCU}")
+set(CMAKE_CXX_FLAGS_RELEASE "")
+set(CMAKE_CXX_FLAGS_MINSIZEREL "")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "")
+set(CMAKE_CXX_FLAGS_DEBUG "")
+set(CMAKE_C_FLAGS "${ARDUINO_C_FLAGS} -mmcu=${ARDUINO_MCU}")
+set(CMAKE_C_FLAGS_RELEASE "")
+set(CMAKE_C_FLAGS_MINSIZEREL "")
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "")
+set(CMAKE_C_FLAGS_DEBUG "")
+set(CMAKE_ASM_FLAGS "${ARDUINO_ASM_FLAGS} -mmcu=${ARDUINO_MCU}")
+set(CMAKE_EXE_LINKER_FLAGS "${ARDUINO_EXE_LINKER_FLAGS} -mmcu=${ARDUINO_MCU}")
+
+add_definitions("-DARDUINO_ARCH_AVR")
+add_definitions("-DF_CPU=${ARDUINO_F_CPU}")
 
 set(ARDUINO_ARCH "avr" CACHE INTERNAL "ARDUINO_ARCH")
 
