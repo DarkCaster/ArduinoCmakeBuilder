@@ -147,12 +147,12 @@ set(ARDUINO_EXE_LINKER_FLAGS "-Wall -Wextra -Os -g -flto -fuse-linker-plugin -Wl
 
 # add default compiler definitions
 
-set(CMAKE_CXX_FLAGS "${ARDUINO_CXX_FLAGS} -mmcu=${ARDUINO_MCU}")
+set(CMAKE_CXX_FLAGS "-x c++ ${ARDUINO_CXX_FLAGS} -mmcu=${ARDUINO_MCU}")
 set(CMAKE_CXX_FLAGS_RELEASE "")
 set(CMAKE_CXX_FLAGS_MINSIZEREL "")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "")
 set(CMAKE_CXX_FLAGS_DEBUG "")
-set(CMAKE_C_FLAGS "${ARDUINO_C_FLAGS} -mmcu=${ARDUINO_MCU}")
+set(CMAKE_C_FLAGS "-x c ${ARDUINO_C_FLAGS} -mmcu=${ARDUINO_MCU}")
 set(CMAKE_C_FLAGS_RELEASE "")
 set(CMAKE_C_FLAGS_MINSIZEREL "")
 set(CMAKE_C_FLAGS_RELWITHDEBINFO "")
@@ -196,11 +196,10 @@ function(add_arduino_upload_target BASE_TARGET)
     add_custom_target(${BASE_TARGET}-upload DEPENDS ${BASE_TARGET}.upload)
 endfunction()
 
-function(gcc_find_default_includes COMPILER_LANG COMPILER_BIN COMPILER_FLAGS RESULT_CACHE)
-    message(STATUS "Detecting default include dirs for ${COMPILER_LANG} language")
+function(gcc_find_default_includes COMPILER_BIN COMPILER_FLAGS RESULT_CACHE)
     file(WRITE "${CMAKE_BINARY_DIR}/include_test" "\n")
     separate_arguments(FLAGS UNIX_COMMAND ${COMPILER_FLAGS})
-    execute_process(COMMAND ${COMPILER_BIN} -x ${COMPILER_LANG} ${FLAGS} -v -E -dD include_test
+    execute_process(COMMAND ${COMPILER_BIN} ${FLAGS} -v -E -dD include_test
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR} OUTPUT_QUIET ERROR_VARIABLE COMPILER_OUTPUT)
     file(REMOVE "${CMAKE_BINARY_DIR}/include_test")
     if ("${COMPILER_OUTPUT}" MATCHES "> search starts here[^\n]+\n *(.+) *\n *End of (search) list")
@@ -219,30 +218,32 @@ function(gcc_find_default_includes COMPILER_LANG COMPILER_BIN COMPILER_FLAGS RES
         endforeach()
         set(${RESULT_CACHE} ${FINAL_PATH_LIST} CACHE INTERNAL "${RESULT_CACHE}")
     else()
-        message(FATAL_ERROR "Failed to detect default include directories for ${COMPILER_LANG} lang")
+        message(FATAL_ERROR "Failed to detect default include directories!")
     endif()
 endfunction()
 
 if(NOT AVR_C_DEFAULT_INCLUDES)
-    gcc_find_default_includes("c" "${AVR_C}" "${CMAKE_C_FLAGS}" "AVR_C_DEFAULT_INCLUDES")
+    message(STATUS "Detecting default include dirs for C language")
+    gcc_find_default_includes("${AVR_C}" "${CMAKE_C_FLAGS}" "AVR_C_DEFAULT_INCLUDES")
 endif()
 
 if(NOT AVR_CXX_DEFAULT_INCLUDES)
-    gcc_find_default_includes("c++" "${AVR_CXX}" "${CMAKE_CXX_FLAGS}" "AVR_CXX_DEFAULT_INCLUDES")
+    message(STATUS "Detecting default include dirs for C++ language")
+    gcc_find_default_includes("${AVR_CXX}" "${CMAKE_CXX_FLAGS}" "AVR_CXX_DEFAULT_INCLUDES")
 endif()
 
 include_directories(SYSTEM "${AVR_C_DEFAULT_INCLUDES}")
 include_directories(SYSTEM "${AVR_CXX_DEFAULT_INCLUDES}")
 
-function(gcc_find_extra_defines COMPILER_LANG COMPILER_BIN COMPILER_FLAGS RESULT_CACHE)
-    message(STATUS "Detecting extra defines for ${COMPILER_LANG} language")
+function(gcc_find_extra_defines COMPILER_BIN COMPILER_FLAGS RESULT_CACHE)
+
     file(WRITE "${CMAKE_BINARY_DIR}/define_test" "\n")
     separate_arguments(FLAGS UNIX_COMMAND ${COMPILER_FLAGS})
     get_property(CURRENT_DEFINES_RAW DIRECTORY PROPERTY "COMPILE_DEFINITIONS")
     foreach(EVAL_DEFINE IN LISTS CURRENT_DEFINES_RAW)
         list(APPEND CURRENT_DEFINES "-D${EVAL_DEFINE}")
     endforeach()
-    execute_process(COMMAND ${COMPILER_BIN} -x ${COMPILER_LANG} ${FLAGS} ${CURRENT_DEFINES} -E -dD define_test
+    execute_process(COMMAND ${COMPILER_BIN} ${FLAGS} ${CURRENT_DEFINES} -E -dD define_test
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR} OUTPUT_VARIABLE COMPILER_OUTPUT ERROR_QUIET)
     file(REMOVE "${CMAKE_BINARY_DIR}/define_test")
     if ("${COMPILER_OUTPUT}" MATCHES "# 1 \"<command-line>\"\n(.+)\n# 1 \"define_test\"")
@@ -263,17 +264,19 @@ function(gcc_find_extra_defines COMPILER_LANG COMPILER_BIN COMPILER_FLAGS RESULT
         endforeach()
         set(${RESULT_CACHE} ${FINAL_DEFINES_LIST} CACHE INTERNAL "${RESULT_CACHE}")
     else()
-        message(FATAL_ERROR "Failed to detect default include directories for ${COMPILER_LANG} lang")
+        message(FATAL_ERROR "Failed to detect default include directories!")
     endif()
 endfunction()
 
 # detect compiler's extra built-in defines that appears after adding our custom definition flags and compiler options for selected MCU and other stuff
 if(NOT AVR_C_EXTRA_DEFINES)
-    gcc_find_extra_defines("c" "${AVR_C}" "${CMAKE_C_FLAGS}" "AVR_C_EXTRA_DEFINES")
+    message(STATUS "Detecting extra defines for C language")
+    gcc_find_extra_defines("${AVR_C}" "${CMAKE_C_FLAGS}" "AVR_C_EXTRA_DEFINES")
 endif()
 
 if(NOT AVR_CXX_EXTRA_DEFINES)
-    gcc_find_extra_defines("c++" "${AVR_CXX}" "${CMAKE_CXX_FLAGS}" "AVR_CXX_EXTRA_DEFINES")
+    message(STATUS "Detecting extra defines for C++ language")
+    gcc_find_extra_defines("${AVR_CXX}" "${CMAKE_CXX_FLAGS}" "AVR_CXX_EXTRA_DEFINES")
 endif()
 
 function(gcc_merge_defines DEFINES_LIST)
