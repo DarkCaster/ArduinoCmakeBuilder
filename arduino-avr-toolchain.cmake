@@ -224,11 +224,11 @@ function(gcc_find_default_includes COMPILER_LANG COMPILER_BIN COMPILER_FLAGS RES
 endfunction()
 
 if(NOT AVR_C_DEFAULT_INCLUDES)
-    gcc_find_default_includes("c" "${AVR_C}" "${ARDUINO_C_FLAGS_FULL}" "AVR_C_DEFAULT_INCLUDES")
+    gcc_find_default_includes("c" "${AVR_C}" "${CMAKE_C_FLAGS}" "AVR_C_DEFAULT_INCLUDES")
 endif()
 
 if(NOT AVR_CXX_DEFAULT_INCLUDES)
-    gcc_find_default_includes("c++" "${AVR_CXX}" "${ARDUINO_CXX_FLAGS_FULL}" "AVR_CXX_DEFAULT_INCLUDES")
+    gcc_find_default_includes("c++" "${AVR_CXX}" "${CMAKE_CXX_FLAGS}" "AVR_CXX_DEFAULT_INCLUDES")
 endif()
 
 include_directories(SYSTEM "${AVR_C_DEFAULT_INCLUDES}")
