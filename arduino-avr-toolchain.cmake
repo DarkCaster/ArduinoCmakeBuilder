@@ -267,6 +267,7 @@ function(gcc_find_extra_defines COMPILER_LANG COMPILER_BIN COMPILER_FLAGS RESULT
     endif()
 endfunction()
 
+# detect compiler's extra built-in defines that appears after adding our custom definition flags and compiler options for selected MCU and other stuff
 if(NOT AVR_C_EXTRA_DEFINES)
     gcc_find_extra_defines("c" "${AVR_C}" "${CMAKE_C_FLAGS}" "AVR_C_EXTRA_DEFINES")
 endif()
@@ -283,13 +284,16 @@ function(gcc_merge_defines DEFINES_LIST)
     foreach(EVAL_DEFINE IN LISTS DEFINES_LIST)
         list(FIND CURRENT_DEFINES "${EVAL_DEFINE}" CURRENT_DEFINES_INDEX)
         if(NOT "${CURRENT_DEFINES_INDEX}" GREATER "-1")
-            message(STATUS "Adding extra definition: ${EVAL_DEFINE}")
+            #message(STATUS "Adding extra definition: ${EVAL_DEFINE}")
             add_definitions("${EVAL_DEFINE}")
         endif()
     endforeach()
 endfunction()
 
+#merge extra defines with current definitions
+#this is needed for QT-Creator for static-analisys to work correctly with arduino core sources
 if(NOT ARDUINO_AVR_EXTRA_DEFINITIONS_SET)
     gcc_merge_defines("${AVR_C_EXTRA_DEFINES}")
     gcc_merge_defines("${AVR_CXX_EXTRA_DEFINES}")
+    set(ARDUINO_AVR_EXTRA_DEFINITIONS_SET TRUE)
 endif()
