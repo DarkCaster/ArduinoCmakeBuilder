@@ -161,6 +161,7 @@ set(CMAKE_ASM_FLAGS "${ARDUINO_ASM_FLAGS} -mmcu=${ARDUINO_MCU}")
 set(CMAKE_EXE_LINKER_FLAGS "${ARDUINO_EXE_LINKER_FLAGS} -mmcu=${ARDUINO_MCU}")
 
 if(NOT ARDUINO_AVR_DEFINITIONS_SET)
+    add_definitions("-D__AVR__")
     add_definitions("-DARDUINO_ARCH_AVR")
     add_definitions("-DF_CPU=${ARDUINO_F_CPU}")
     set(ARDUINO_AVR_DEFINITIONS_SET TRUE)
