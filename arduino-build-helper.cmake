@@ -181,7 +181,19 @@ if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
         ${ENV_PROGRAMFILES}/Arduino/hardware/arduino/${ARDUINO_ARCH}/libraries
         ${ENV_PROGRAMFILES_X86}/Arduino/hardware/arduino/${ARDUINO_ARCH}/libraries)
 elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Linux")
-  message(FATAL_ERROR "TODO")
+    file(TO_CMAKE_PATH "$ENV{HOME}" ENV_HOME)
+    file(GLOB ARDUINO_CORE_SEARCH_DIRS
+        ${CM_ARDUINO_CORE_SEARCH_PATH}
+        ${ENV_HOME}/.arduino*/packages/arduino/hardware/${ARDUINO_ARCH}/*/cores/arduino
+        ${ENV_HOME}/arduino-*/hardware/arduino/${ARDUINO_ARCH}/cores/arduino)
+    file(GLOB ARDUINO_VARIANT_SEARCH_DIRS
+        ${CM_ARDUINO_VARIANT_SEARCH_PATH}
+        ${ENV_HOME}/.arduino*/packages/arduino/hardware/${ARDUINO_ARCH}/*/variants/${ARDUINO_VARIANT}
+        ${ENV_HOME}/arduino-*/hardware/arduino/${ARDUINO_ARCH}/variants/${ARDUINO_VARIANT})
+    file(GLOB ARDUINO_LIBS_SEARCH_DIRS
+        ${CM_ARDUINO_LIBS_SEARCH_PATH}
+        ${ENV_HOME}/.arduino*/packages/arduino/hardware/${ARDUINO_ARCH}/*/libraries
+        ${ENV_HOME}/arduino-*/hardware/arduino/${ARDUINO_ARCH}/libraries)
 else()
   message(FATAL_ERROR "This platform is not supported!")
 endif()
