@@ -116,7 +116,15 @@ if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
         ${ENV_PROGRAMFILES}/Arduino/hardware/tools/avr
         ${ENV_PROGRAMFILES_X86}/Arduino/hardware/tools/avr)
 elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Linux")
-  message(FATAL_ERROR "TODO")
+    file(TO_CMAKE_PATH "$ENV{HOME}" ENV_HOME)
+    file(GLOB AVR_TEST_DIRS
+        ${CM_AVR_TOOLCHAIN_SEARCH_PATH}
+        ${ENV_HOME}/.arduino*/packages/arduino/tools/avr-gcc/*
+        ${ENV_HOME}/arduino-*/hardware/tools/avr)
+    file(GLOB AVRDUDE_TEST_DIRS
+        ${CM_AVRDUDE_SEARCH_PATH}
+        ${ENV_HOME}/.arduino*/packages/arduino/tools/avrdude/*
+        ${ENV_HOME}/arduino-*/hardware/tools/avr)
 else()
   message(FATAL_ERROR "This platform is not supported!")
 endif ()
