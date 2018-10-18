@@ -87,16 +87,30 @@ function(probe_arduino_avrdude PROBEPATH)
 endfunction()
 
 set(AVR_TOOLCHAIN_SEARCH_PATH "" CACHE PATH "Custom AVR toolchain search path, will be probed first")
-if(NOT ${AVR_TOOLCHAIN_SEARCH_PATH} STREQUAL "")
+if(NOT "${AVR_TOOLCHAIN_SEARCH_PATH}" STREQUAL "")
     file(TO_CMAKE_PATH "${AVR_TOOLCHAIN_SEARCH_PATH}" CM_AVR_TOOLCHAIN_SEARCH_PATH)
-    message(STATUS "Will try custom search path at ${CM_AVR_TOOLCHAIN_SEARCH_PATH}")
+    if(NOT "${AVR_TOOLCHAIN_SEARCH_PATH}" STREQUAL "${AVR_TOOLCHAIN_SEARCH_PATH_PREV}") #if AVR_TOOLCHAIN_SEARCH_PATH was changed
+      message(STATUS "Will try custom avr-toolchain search path at ${CM_AVR_TOOLCHAIN_SEARCH_PATH}")
+      unset(AVR_TOOLCHAIN_PATH CACHE)
+      set(AVR_TOOLCHAIN_SEARCH_PATH_PREV "${AVR_TOOLCHAIN_SEARCH_PATH}" CACHE INTERNAL "AVR_TOOLCHAIN_SEARCH_PATH_PREV")
+    endif()
+elseif(NOT "${AVR_TOOLCHAIN_SEARCH_PATH_PREV}" STREQUAL "") #if AVR_TOOLCHAIN_SEARCH_PATH was unset after being used in previous run
+    message(STATUS "Removing custom avr-toolchain search path from evaluation")
+    unset(AVR_TOOLCHAIN_SEARCH_PATH_PREV CACHE)
     unset(AVR_TOOLCHAIN_PATH CACHE)
 endif()
 
 set(AVRDUDE_SEARCH_PATH "" CACHE PATH "Custom AVRDUDE search path, will be probed first")
 if(NOT ${AVRDUDE_SEARCH_PATH} STREQUAL "")
     file(TO_CMAKE_PATH "${AVRDUDE_SEARCH_PATH}" CM_AVRDUDE_SEARCH_PATH)
-    message(STATUS "Will try custom search path at ${CM_AVRDUDE_SEARCH_PATH}")
+    if(NOT "${AVRDUDE_SEARCH_PATH}" STREQUAL "${AVRDUDE_SEARCH_PATH_PREV}") #if AVR_TOOLCHAIN_SEARCH_PATH was changed
+      message(STATUS "Will try custom avrdude search path at ${CM_AVRDUDE_SEARCH_PATH}")
+      unset(AVRDUDE_PATH CACHE)
+      set(AVRDUDE_SEARCH_PATH_PREV "${AVRDUDE_SEARCH_PATH}" CACHE INTERNAL "AVRDUDE_SEARCH_PATH_PREV")
+    endif()
+elseif(NOT "${AVRDUDE_SEARCH_PATH_PREV}" STREQUAL "") #if AVRDUDE_SEARCH_PATH was unset after being used in previous run
+    message(STATUS "Removing custom avrdude search path from evaluation")
+    unset(AVRDUDE_SEARCH_PATH_PREV CACHE)
     unset(AVRDUDE_PATH CACHE)
 endif()
 
