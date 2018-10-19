@@ -153,17 +153,17 @@ elseif(NOT "${ARDUINO_CORE_SEARCH_PATH_PREV}" STREQUAL "") #if ARDUINO_CORE_SEAR
     unset(ARDUINO_CORE_PATH CACHE)
 endif()
 
-set(ARDUINO_VARIANT_SEARCH_PATH "" CACHE PATH "Custom arduino-variant search path, will be probed first")
-if(NOT ${ARDUINO_VARIANT_SEARCH_PATH} STREQUAL "")
-    file(TO_CMAKE_PATH "${ARDUINO_VARIANT_SEARCH_PATH}" CM_ARDUINO_VARIANT_SEARCH_PATH)
-    if(NOT "${ARDUINO_VARIANT_SEARCH_PATH}" STREQUAL "${ARDUINO_VARIANT_SEARCH_PATH_PREV}") #if ARDUINO_VARIANT_SEARCH_PATH was changed
-      message(STATUS "Will try custom arduino-variant search path at ${CM_ARDUINO_VARIANT_SEARCH_PATH}")
+set(ARDUINO_VARIANTS_SEARCH_PATH "" CACHE PATH "Custom arduino-variant search path, will be probed first")
+if(NOT ${ARDUINO_VARIANTS_SEARCH_PATH} STREQUAL "")
+    file(TO_CMAKE_PATH "${ARDUINO_VARIANTS_SEARCH_PATH}" CM_ARDUINO_VARIANTS_SEARCH_PATH)
+    if(NOT "${ARDUINO_VARIANTS_SEARCH_PATH}" STREQUAL "${ARDUINO_VARIANTS_SEARCH_PATH_PREV}") #if ARDUINO_VARIANTS_SEARCH_PATH was changed
+      message(STATUS "Will try custom arduino-variants search path at ${CM_ARDUINO_VARIANTS_SEARCH_PATH}")
       unset(ARDUINO_VARIANT_PATH)
-      set(ARDUINO_VARIANT_SEARCH_PATH_PREV "${ARDUINO_VARIANT_SEARCH_PATH}" CACHE INTERNAL "ARDUINO_VARIANT_SEARCH_PATH_PREV")
+      set(ARDUINO_VARIANTS_SEARCH_PATH_PREV "${ARDUINO_VARIANTS_SEARCH_PATH}" CACHE INTERNAL "ARDUINO_VARIANTS_SEARCH_PATH_PREV")
     endif()
-elseif(NOT "${ARDUINO_VARIANT_SEARCH_PATH_PREV}" STREQUAL "") #if ARDUINO_VARIANT_SEARCH_PATH was unset after being used in previous run
-    message(STATUS "Removing custom arduino-variant search path from evaluation")
-    unset(ARDUINO_VARIANT_SEARCH_PATH_PREV CACHE)
+elseif(NOT "${ARDUINO_VARIANTS_SEARCH_PATH_PREV}" STREQUAL "") #if ARDUINO_VARIANTS_SEARCH_PATH was unset after being used in previous run
+    message(STATUS "Removing custom arduino-variants search path from evaluation")
+    unset(ARDUINO_VARIANTS_SEARCH_PATH_PREV CACHE)
     unset(ARDUINO_VARIANT_PATH CACHE)
 endif()
 
@@ -192,7 +192,7 @@ if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
         ${ENV_PROGRAMFILES}/Arduino/hardware/arduino/${ARDUINO_ARCH}/cores/arduino
         ${ENV_PROGRAMFILES_X86}/Arduino/hardware/arduino/${ARDUINO_ARCH}/cores/arduino)
     file(GLOB ARDUINO_VARIANT_SEARCH_DIRS
-        ${CM_ARDUINO_VARIANT_SEARCH_PATH}
+        ${CM_ARDUINO_VARIANTS_SEARCH_PATH}/${ARDUINO_VARIANT}
         ${ENV_LOCALAPPDATA}/Arduino*/packages/arduino/hardware/${ARDUINO_ARCH}/*/variants/${ARDUINO_VARIANT}
         ${ENV_PROGRAMFILES}/Arduino/hardware/arduino/${ARDUINO_ARCH}/variants/${ARDUINO_VARIANT}
         ${ENV_PROGRAMFILES_X86}/Arduino/hardware/arduino/${ARDUINO_ARCH}/variants/${ARDUINO_VARIANT})
@@ -208,7 +208,7 @@ elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Linux")
         ${ENV_HOME}/.arduino*/packages/arduino/hardware/${ARDUINO_ARCH}/*/cores/arduino
         ${ENV_HOME}/arduino-*/hardware/arduino/${ARDUINO_ARCH}/cores/arduino)
     file(GLOB ARDUINO_VARIANT_SEARCH_DIRS
-        ${CM_ARDUINO_VARIANT_SEARCH_PATH}
+        ${CM_ARDUINO_VARIANTS_SEARCH_PATH}/${ARDUINO_VARIANT}
         ${ENV_HOME}/.arduino*/packages/arduino/hardware/${ARDUINO_ARCH}/*/variants/${ARDUINO_VARIANT}
         ${ENV_HOME}/arduino-*/hardware/arduino/${ARDUINO_ARCH}/variants/${ARDUINO_VARIANT})
     file(GLOB ARDUINO_LIBS_SEARCH_DIRS
