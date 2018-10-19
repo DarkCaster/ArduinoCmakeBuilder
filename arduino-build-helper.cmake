@@ -142,21 +142,42 @@ endfunction()
 set(ARDUINO_CORE_SEARCH_PATH "" CACHE PATH "Custom arduino-core search path, will be probed first")
 if(NOT ${ARDUINO_CORE_SEARCH_PATH} STREQUAL "")
     file(TO_CMAKE_PATH "${ARDUINO_CORE_SEARCH_PATH}" CM_ARDUINO_CORE_SEARCH_PATH)
-    message(STATUS "Will try custom arduino-core search path at ${CM_ARDUINO_CORE_SEARCH_PATH}")
+    if(NOT "${ARDUINO_CORE_SEARCH_PATH}" STREQUAL "${ARDUINO_CORE_SEARCH_PATH_PREV}") #if ARDUINO_CORE_SEARCH_PATH was changed
+      message(STATUS "Will try custom arduino-core search path at ${CM_ARDUINO_CORE_SEARCH_PATH}")
+      unset(ARDUINO_CORE_PATH CACHE)
+      set(ARDUINO_CORE_SEARCH_PATH_PREV "${ARDUINO_CORE_SEARCH_PATH}" CACHE INTERNAL "ARDUINO_CORE_SEARCH_PATH_PREV")
+    endif()
+elseif(NOT "${ARDUINO_CORE_SEARCH_PATH_PREV}" STREQUAL "") #if ARDUINO_CORE_SEARCH_PATH was unset after being used in previous run
+    message(STATUS "Removing custom arduino-core search path from evaluation")
+    unset(ARDUINO_CORE_SEARCH_PATH_PREV CACHE)
     unset(ARDUINO_CORE_PATH CACHE)
 endif()
 
 set(ARDUINO_VARIANT_SEARCH_PATH "" CACHE PATH "Custom arduino-variant search path, will be probed first")
 if(NOT ${ARDUINO_VARIANT_SEARCH_PATH} STREQUAL "")
     file(TO_CMAKE_PATH "${ARDUINO_VARIANT_SEARCH_PATH}" CM_ARDUINO_VARIANT_SEARCH_PATH)
-    message(STATUS "Will try custom arduino-variant search path at ${CM_ARDUINO_VARIANT_SEARCH_PATH}")
-    unset(ARDUINO_VARIANT_PATH)
+    if(NOT "${ARDUINO_VARIANT_SEARCH_PATH}" STREQUAL "${ARDUINO_VARIANT_SEARCH_PATH_PREV}") #if ARDUINO_VARIANT_SEARCH_PATH was changed
+      message(STATUS "Will try custom arduino-variant search path at ${CM_ARDUINO_VARIANT_SEARCH_PATH}")
+      unset(ARDUINO_VARIANT_PATH)
+      set(ARDUINO_VARIANT_SEARCH_PATH_PREV "${ARDUINO_VARIANT_SEARCH_PATH}" CACHE INTERNAL "ARDUINO_VARIANT_SEARCH_PATH_PREV")
+    endif()
+elseif(NOT "${ARDUINO_VARIANT_SEARCH_PATH_PREV}" STREQUAL "") #if ARDUINO_VARIANT_SEARCH_PATH was unset after being used in previous run
+    message(STATUS "Removing custom arduino-variant search path from evaluation")
+    unset(ARDUINO_VARIANT_SEARCH_PATH_PREV CACHE)
+    unset(ARDUINO_VARIANT_PATH CACHE)
 endif()
 
 set(ARDUINO_LIBS_SEARCH_PATH "" CACHE PATH "Custom arduino-libs search path, will be probed first")
 if(NOT ${ARDUINO_LIBS_SEARCH_PATH} STREQUAL "")
     file(TO_CMAKE_PATH "${ARDUINO_LIBS_SEARCH_PATH}" CM_ARDUINO_LIBS_SEARCH_PATH)
-    message(STATUS "Will try custom arduino-variant search path at ${CM_ARDUINO_LIBS_SEARCH_PATH}")
+    if(NOT "${ARDUINO_LIBS_SEARCH_PATH}" STREQUAL "${ARDUINO_LIBS_SEARCH_PATH_PREV}") #if ARDUINO_LIBS_SEARCH_PATH was changed
+      message(STATUS "Will try custom arduino-libs search path at ${CM_ARDUINO_LIBS_SEARCH_PATH}")
+      unset(ARDUINO_LIBS_PATH CACHE)
+      set(ARDUINO_LIBS_SEARCH_PATH_PREV "${ARDUINO_LIBS_SEARCH_PATH}" CACHE INTERNAL "ARDUINO_LIBS_SEARCH_PATH_PREV")
+    endif()
+elseif(NOT "${ARDUINO_LIBS_SEARCH_PATH_PREV}" STREQUAL "") #if ARDUINO_LIBS_SEARCH_PATH was unset after being used in previous run
+    message(STATUS "Removing custom arduino-libs search path from evaluation")
+    unset(ARDUINO_LIBS_SEARCH_PATH_PREV CACHE)
     unset(ARDUINO_LIBS_PATH CACHE)
 endif()
 
