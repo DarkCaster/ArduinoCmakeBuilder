@@ -164,7 +164,7 @@ if(NOT ${ARDUINO_VARIANTS_SEARCH_PATH} STREQUAL "")
 elseif(NOT "${ARDUINO_VARIANTS_SEARCH_PATH_PREV}" STREQUAL "") #if ARDUINO_VARIANTS_SEARCH_PATH was unset after being used in previous run
     message(STATUS "Removing custom arduino-variants search path from evaluation")
     unset(ARDUINO_VARIANTS_SEARCH_PATH_PREV CACHE)
-    unset(ARDUINO_VARIANT_PATH CACHE)
+    unset(ARDUINO_VARIANT_PATH)
 endif()
 
 set(ARDUINO_LIBS_SEARCH_PATH "" CACHE PATH "Custom arduino-libs search path, will be probed first")
