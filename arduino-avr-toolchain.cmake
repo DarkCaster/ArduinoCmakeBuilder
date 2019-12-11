@@ -162,8 +162,8 @@ endif()
 set(ARDUINO_MCU "atmega328p" CACHE STRING "MCU model, used by compiler")
 set(ARDUINO_F_CPU "16000000L" CACHE STRING "Target clock speed")
 
-set(ARDUINO_CXX_FLAGS "-g -Os -Wall -Wextra -std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -Wno-error=narrowing -flto" CACHE STRING "Arduino AVR C++ flags (from arduino IDE 1.8.5)")
-set(ARDUINO_C_FLAGS "-g -Os -Wall -Wextra -std=gnu11 -ffunction-sections -fdata-sections -Wno-error=narrowing -flto -fno-fat-lto-objects" CACHE STRING "Arduino AVR C flags (from arduino IDE 1.8.5)")
+set(ARDUINO_CXX_FLAGS "-g -Os -Wall -Wextra -std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -Wno-error=narrowing -flto" CACHE STRING "Arduino AVR C++ flags (from arduino IDE 1.8.10)")
+set(ARDUINO_C_FLAGS "-g -Os -Wall -Wextra -std=gnu11 -ffunction-sections -fdata-sections -Wno-error=narrowing -flto -fno-fat-lto-objects" CACHE STRING "Arduino AVR C flags (from arduino IDE 1.8.10)")
 set(ARDUINO_ASM_FLAGS "-g -x assembler-with-cpp -flto" CACHE STRING "Arduino AVR ASM flags")
 set(ARDUINO_EXE_LINKER_FLAGS "-Wall -Wextra -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections,--relax" CACHE STRING "Arduino AVR GCC-linker flags")
 
