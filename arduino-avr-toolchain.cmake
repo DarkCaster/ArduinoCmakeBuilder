@@ -69,7 +69,7 @@ function(probe_arduino_avrdude PROBEPATH)
         unset(AVRDUDE_CFG CACHE)
 
         find_program(AVRDUDE_BIN avrdude PATHS "${PROBEPATH}/bin" NO_DEFAULT_PATH)
-        find_program(AVRDUDE_CFG avrdude.conf PATHS "${PROBEPATH}/etc" NO_DEFAULT_PATH)
+        find_file(AVRDUDE_CFG avrdude.conf PATHS "${PROBEPATH}/etc" NO_DEFAULT_PATH)
 
         foreach(probe IN ITEMS AVRDUDE_BIN AVRDUDE_CFG)
             if(("${${probe}}" STREQUAL "${probe}-NOTFOUND") OR ("${${probe}}" STREQUAL ""))
