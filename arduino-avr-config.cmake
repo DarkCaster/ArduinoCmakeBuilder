@@ -82,7 +82,7 @@ function(add_arduino_post_target BASE_TARGET)
         COMMAND ${AVR_STRIP} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${BASE_TARGET}"
         COMMAND ${AVR_OBJCOPY} -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${BASE_TARGET}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${BASE_TARGET}.eep"
         COMMAND ${AVR_OBJCOPY} -O ihex -R .eeprom "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${BASE_TARGET}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${BASE_TARGET}.hex"
-        COMMAND ${AVR_SIZE} --mcu=${MCU} -C --format=avr "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${BASE_TARGET}"
+				COMMAND ${AVR_SIZE} --mcu=${ARDUINO_MCU} -C --format=avr "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${BASE_TARGET}"
         DEPENDS ${BASE_TARGET})
     add_custom_target(${BASE_TARGET}-post DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${BASE_TARGET}.hex)
 endfunction()
