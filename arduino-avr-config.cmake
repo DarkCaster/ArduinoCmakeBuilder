@@ -121,15 +121,11 @@ function(gcc_find_default_includes COMPILER_BIN COMPILER_FLAGS RESULT_CACHE)
     endif()
 endfunction()
 
-if(NOT AVR_C_DEFAULT_INCLUDES)
-    message(STATUS "Detecting default include dirs for C language")
-    gcc_find_default_includes("${AVR_C}" "${CMAKE_C_FLAGS}" "AVR_C_DEFAULT_INCLUDES")
-endif()
+message(STATUS "Detecting default include dirs for C language")
+gcc_find_default_includes("${AVR_C}" "${CMAKE_C_FLAGS}" "AVR_C_DEFAULT_INCLUDES")
 
-if(NOT AVR_CXX_DEFAULT_INCLUDES)
-    message(STATUS "Detecting default include dirs for C++ language")
-    gcc_find_default_includes("${AVR_CXX}" "${CMAKE_CXX_FLAGS}" "AVR_CXX_DEFAULT_INCLUDES")
-endif()
+message(STATUS "Detecting default include dirs for C++ language")
+gcc_find_default_includes("${AVR_CXX}" "${CMAKE_CXX_FLAGS}" "AVR_CXX_DEFAULT_INCLUDES")
 
 include_directories(SYSTEM "${AVR_C_DEFAULT_INCLUDES}")
 include_directories(SYSTEM "${AVR_CXX_DEFAULT_INCLUDES}")
@@ -166,17 +162,6 @@ function(gcc_find_extra_defines COMPILER_BIN COMPILER_FLAGS RESULT_CACHE)
     endif()
 endfunction()
 
-# detect compiler's extra built-in defines that appears after adding our custom definition flags and compiler options for selected MCU and other stuff
-if(NOT AVR_C_EXTRA_DEFINES)
-    message(STATUS "Detecting extra defines for C language")
-    gcc_find_extra_defines("${AVR_C}" "${CMAKE_C_FLAGS}" "AVR_C_EXTRA_DEFINES")
-endif()
-
-if(NOT AVR_CXX_EXTRA_DEFINES)
-    message(STATUS "Detecting extra defines for C++ language")
-    gcc_find_extra_defines("${AVR_CXX}" "${CMAKE_CXX_FLAGS}" "AVR_CXX_EXTRA_DEFINES")
-endif()
-
 function(gcc_merge_defines DEFINES_LIST)
     get_property(CURRENT_DEFINES_RAW DIRECTORY PROPERTY "COMPILE_DEFINITIONS")
     foreach(EVAL_DEFINE IN LISTS CURRENT_DEFINES_RAW)
@@ -191,10 +176,15 @@ function(gcc_merge_defines DEFINES_LIST)
     endforeach()
 endfunction()
 
-#merge extra defines with current definitions
-#this is needed for QT-Creator for static-analisys to work correctly with arduino core sources
-if(NOT ARDUINO_AVR_EXTRA_DEFINITIONS_SET)
-    gcc_merge_defines("${AVR_C_EXTRA_DEFINES}")
-    gcc_merge_defines("${AVR_CXX_EXTRA_DEFINES}")
-    set(ARDUINO_AVR_EXTRA_DEFINITIONS_SET TRUE)
-endif()
+# detect compiler's extra built-in defines that appears after adding our custom definition flags and compiler options for selected MCU and other stuff
+message(STATUS "Detecting extra defines for C language")
+gcc_find_extra_defines("${AVR_C}" "${CMAKE_C_FLAGS}" "AVR_C_EXTRA_DEFINES")
+
+message(STATUS "Detecting extra defines for C++ language")
+gcc_find_extra_defines("${AVR_CXX}" "${CMAKE_CXX_FLAGS}" "AVR_CXX_EXTRA_DEFINES")
+
+# merge extra defines with current definitions
+gcc_merge_defines("${AVR_C_EXTRA_DEFINES}")
+gcc_merge_defines("${AVR_CXX_EXTRA_DEFINES}")
+
+set(ARDUINO_CONFIG_INCLUDED TRUE)
