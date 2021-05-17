@@ -66,12 +66,9 @@ endfunction()
 #set default definitions
 set_avr_compiler_flags()
 
-if(NOT ARDUINO_AVR_DEFINITIONS_SET)
-    add_definitions("-D__AVR__")
-    add_definitions("-DARDUINO_ARCH_AVR")
-    add_definitions("-DF_CPU=${ARDUINO_F_CPU}")
-    set(ARDUINO_AVR_DEFINITIONS_SET TRUE)
-endif()
+add_definitions("-D__AVR__")
+add_definitions("-DARDUINO_ARCH_AVR")
+add_definitions("-DF_CPU=${ARDUINO_F_CPU}")
 
 set(ARDUINO_ARCH "avr" CACHE INTERNAL "ARDUINO_ARCH")
 
