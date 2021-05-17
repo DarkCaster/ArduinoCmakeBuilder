@@ -91,7 +91,7 @@ function(add_arduino_upload_target BASE_TARGET)
     add_custom_command(OUTPUT ${BASE_TARGET}.upload
         COMMAND ${AVRDUDE_BIN} -C\"${AVRDUDE_CFG}\" -P${ARDUINO_AVRDUDE_PORT} -b${ARDUINO_AVRDUDE_BAUD} -c${ARDUINO_AVRDUDE_PROTO} -p${ARDUINO_AVRDUDE_MCU} ${ARDUINO_AVRDUDE_EXTRACMD} -Uflash:w:\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${BASE_TARGET}\".hex:i
         DEPENDS ${BASE_TARGET}-post)
-    add_custom_target(${BASE_TARGET}-upload DEPENDS ${BASE_TARGET}.upload)
+    add_custom_target(${BASE_TARGET}-upload ALL DEPENDS ${BASE_TARGET}.upload)
 endfunction()
 
 function(gcc_find_default_includes COMPILER_BIN COMPILER_FLAGS RESULT_CACHE)
