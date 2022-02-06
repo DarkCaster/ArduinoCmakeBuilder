@@ -2,7 +2,7 @@ if(NOT ARDUINO_CONFIG_INCLUDED)
 	message(FATAL "arduino-*-config.cmake must be included first!")
 endif()
 
-set(ARDUINO_VER "10815" CACHE STRING "Arduino version define, 10815 == 1.8.15")
+set(ARDUINO_VER "10819" CACHE STRING "Arduino version define, 10819 == 1.8.19")
 set(ARDUINO_MODEL "ARDUINO_AVR_PRO" CACHE STRING "Arduino board define")
 set(ARDUINO_VARIANT "standard" CACHE STRING "Arduino board variant")
 
